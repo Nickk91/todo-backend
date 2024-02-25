@@ -1,15 +1,27 @@
-const require =require("express");
-const mongoose =require("mongoose");
-const app=express();
- mongoose.connect("mongodb://localhost:27017/latestdb",{
-    useNewUrlParser:true, useUnifiedTopology:true
-},(err)=>{if(err){
-    console.log(err)
-}else{
-    console.log("Successfully connected")
-}})
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import router from "./routes/routes.js";
+import cors from "cors";
+dotenv.config();
 
+const app = express();
+app.use(express.json());
+app.use(cors());
+console.log(process.env.MONGO_URI);
+mongoose
+  .connect(process.env.MONGO_URI, {})
+  .then(() => {
+    console.log("Connected to MongoDB");
+    // Your server setup code here
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 
-app.listen(3000,()=>{
-    console.log("on port 3000 !!!")
-})
+app.use("/api/v1/todos", router);
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`on port ${PORT} !!!`);
+});
